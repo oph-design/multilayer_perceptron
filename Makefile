@@ -10,9 +10,11 @@ $(NAME):
 	@python3 -m pip install virtualenv
 	@virtualenv $(NAME)
 	@$(NAME)/bin/python3 -m pip install -r requirements.txt
+	@ln -s $(NAME)/bin/activate activate
 	@echo "$(GREEN)dependencies successfully installed$(WHITE)"
 
 clean: 
+	@rm activate
 	@rm -rf $(NAME)
 	@echo "$(GREEN)Virtual environment cleaned!$(WHITE)"
 
