@@ -1,40 +1,6 @@
 import pandas as pd
 from pandas.core.api import Series
-
-colnames = [
-    "ID",
-    "diagnosis",
-    "radius_mean",
-    "texture_mean",
-    "perimeter_mean",
-    "area_mean",
-    "smoothness_mean",
-    "compactness_mean",
-    "concavity_mean",
-    "concave_points_mean",
-    "symmetry_mean",
-    "fractal_dimension_mean",
-    "radius_SE",
-    "texture_SE",
-    "perimeter_SE",
-    "area_SE",
-    "smoothness_SE",
-    "compactness_SE",
-    "concavity_SE",
-    "concave_points_SE",
-    "symmetry_SE",
-    "fractal_dimension_SE",
-    "radius_worst",
-    "texture_worst",
-    "perimeter_worst",
-    "area_worst",
-    "smoothness_worst",
-    "compactness_worst",
-    "concavity_worst",
-    "concave_points_worst",
-    "symmetry_worst",
-    "fractal_dimension_worst",
-]
+from .columns import colnames
 
 
 def normalize(column: Series) -> Series:
