@@ -45,7 +45,11 @@ res = {
 
 
 def read_conf(location: str) -> dict:
-    config = open(location, "r")
+    try:
+        config = open(location, "r")
+    except Exception as e:
+        print(e)
+        return res
     lines = config.readlines()
     for line in lines:
         for key in translate:
@@ -57,6 +61,3 @@ def read_conf(location: str) -> dict:
                 print(e)
     return res
 
-
-if __name__ == "__main__":
-    read_conf("configs/example.conf")

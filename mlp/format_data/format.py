@@ -25,13 +25,12 @@ def label_data(data: pd.DataFrame) -> pd.DataFrame:
 
 def split_data(location: str, split: float) -> None:
     """splits data in test and train data"""
-    data = pd.read_csv(location, names=colnames, header=None)
+    try:
+        data = pd.read_csv(location, names=colnames, header=None)
+    except Exception as e:
+        return print(e)
     data = normalize_data(label_data(data))
     test_data = data.sample(n=(int(data.shape[0] * (1 - split))))
     train_data = data.drop(index=list(test_data.index))
     test_data.to_csv("datasets/data_test.csv", index=False)
     train_data.to_csv("datasets/data_train.csv", index=False)
-
-
-if __name__ == "__main__":
-    split_data("ressources/data.csv", 0.8)
