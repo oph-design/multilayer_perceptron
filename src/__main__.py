@@ -44,7 +44,9 @@ def main():
     while True:
         entry = input(f"{B}multilayer-perceptron:{R} ")
         args = entry.split()
-        if args[0] == "format":
+        if len(args) == 0:
+            continue
+        elif args[0] == "format":
             format(len(args), args)
         elif args[0] == "train":
             train(len(args), args)
