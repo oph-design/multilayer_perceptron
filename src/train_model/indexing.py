@@ -19,5 +19,6 @@ def index_batches(batch_size: int) -> pd.DataFrame:
     except Exception as e:
         print(e)
         return data
+    data = data.sample(frac=1).reset_index(drop=True)
     data.insert(0, "Batch", get_indicies(batch_size, data.shape[0]))
     return data
