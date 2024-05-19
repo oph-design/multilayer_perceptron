@@ -58,6 +58,5 @@ def read_conf(location: str) -> dict:
                 if line.find(key) != -1:
                     res[key] = translate[key](line[pos:].strip())
             except Exception as e:
-                print(e)
+                print(f"{e} chose default instead")
     return res
-

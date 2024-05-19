@@ -1,5 +1,5 @@
 from format_data import split_data
-from train_model import read_conf
+from train_model import read_conf, index_batches
 import sys
 
 BB = "\033[1;34m"
@@ -37,14 +37,15 @@ def train(argc: int, argv: list) -> None:
     location = "configs/example.conf"
     if argc >= 2:
         location = argv[1]
-    print(read_conf(location))
+    conf = read_conf(location)
+    print(index_batches(conf["batch_size"]))
 
 
 def main():
     if len(sys.argv) == 4:
         format(3, sys.argv[1:])
         train(2, sys.argv)
-        return 
+        return
     greet_user()
     while True:
         entry = input(f"{B}multilayer-perceptron:{R} ")
