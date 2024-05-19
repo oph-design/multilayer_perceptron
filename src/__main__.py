@@ -1,5 +1,6 @@
 from format_data import split_data
 from train_model import read_conf
+import sys
 
 BB = "\033[1;34m"
 B = "\033[34m"
@@ -40,6 +41,10 @@ def train(argc: int, argv: list) -> None:
 
 
 def main():
+    if len(sys.argv) == 4:
+        format(3, sys.argv[1:])
+        train(2, sys.argv)
+        return 
     greet_user()
     while True:
         entry = input(f"{B}multilayer-perceptron:{R} ")
