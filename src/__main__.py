@@ -12,10 +12,10 @@ def greet_user() -> None:
     print(f"{BB}---Welcome to Multilayer-Perceptron---")
     print(f"--------------------------------------{R}")
     print(f"{Y}Quick Guide for using the Commandline:")
-    print(f"(1)   Enter your desired mode:{R} 'format', 'train' or 'predict'")
-    print(f"{Y}(2.1) Additional Arguments 'format':{R} enter Path to desired data CSV")
-    print(f"{Y}(2.2) Additional Arguments 'format':{R} enter desired train-test split")
-    print(f"{Y}(3)   Additional Arguments 'train':{R} enter desired config file")
+    print(f"(1)   Enter your desired mode:{R} 'format', 'train' {Y}or{R} 'predict'")
+    print(f"{Y}(2.1) Additional Argument 'format':{R} enter Path to desired data CSV")
+    print(f"{Y}(2.2) Additional Argument 'format':{R} enter desired train-test split")
+    print(f"{Y}(3)   Additional Argument 'train':{R} enter desired config file")
     print(f"{Y}(4)   Enter {R}'exit'{Y} to leave the program{R}")
     print("")
 
@@ -59,7 +59,7 @@ def main():
         elif args[0] == "predict":
             print("coming soon")
         elif args[0] == "exit":
-            print("Have nice day, Bye Bye!")
+            print("Have a nice day, Bye Bye!")
             break
         else:
             print("please enter a valid mode")
@@ -69,4 +69,4 @@ if __name__ == "__main__":
     try:
         main()
     except EOFError:
-        print("Have nice day, Bye Bye!")
+        print("Have a nice day, Bye Bye!")
