@@ -1,4 +1,5 @@
 def toInt(line: str):
+    """return str as integer"""
     res = int(line)
     if res < 1:
         raise Exception(f"value too low: {line}")
@@ -6,6 +7,7 @@ def toInt(line: str):
 
 
 def layer(line: str) -> list:
+    """return the layers as list"""
     res = []
     args = line.split()
     for arg in args:
@@ -14,6 +16,7 @@ def layer(line: str) -> list:
 
 
 def learning_rate(line: str):
+    """returns learning rate"""
     res = float(line)
     if res < 0:
         raise Exception(f"value too low: {line}")
@@ -21,6 +24,7 @@ def learning_rate(line: str):
 
 
 def loss(line: str):
+    """returns loss function"""
     if line != "binaryCrossentropy":
         raise Exception(f"invalid loss function: {line}")
     return line
@@ -45,6 +49,7 @@ res = {
 
 
 def read_conf(location: str) -> dict:
+    """opens config and parses into dict"""
     try:
         config = open(location, "r")
     except Exception as e:

@@ -9,6 +9,7 @@ R = "\033[0m"
 
 
 def greet_user() -> None:
+    """print tutorial for user"""
     print(f"{BB}---Welcome to Multilayer-Perceptron---")
     print(f"--------------------------------------{R}")
     print(f"{Y}Quick Guide for using the Commandline:")
@@ -21,6 +22,7 @@ def greet_user() -> None:
 
 
 def format(argc: int, argv: list) -> None:
+    """uses the format program and adjusts the parameters"""
     location = "ressources/data.csv"
     split = 0.8
     if argc >= 2:
@@ -34,6 +36,7 @@ def format(argc: int, argv: list) -> None:
 
 
 def train(argc: int, argv: list) -> None:
+    """executes training algorithm"""
     location = "configs/example.conf"
     if argc >= 2:
         location = argv[1]
@@ -42,6 +45,7 @@ def train(argc: int, argv: list) -> None:
 
 
 def main():
+    """main function"""
     if len(sys.argv) == 4:
         format(3, sys.argv[1:])
         train(2, sys.argv)
