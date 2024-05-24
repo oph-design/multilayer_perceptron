@@ -1,5 +1,6 @@
 from format_data import split_data
 from train_model import read_conf, index_batches
+from train_model import Network
 import sys
 
 BB = "\033[1;34m"
@@ -41,7 +42,8 @@ def train(argc: int, argv: list) -> None:
     if argc >= 2:
         location = argv[1]
     conf = read_conf(location)
-    print(index_batches(conf["batch_size"]))
+    network = Network(conf)
+    index_batches(conf["batch_size"])
 
 
 def main():
