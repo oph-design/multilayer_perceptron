@@ -42,8 +42,8 @@ def train(argc: int, argv: list) -> None:
     if argc >= 2:
         location = argv[1]
     conf = read_conf(location)
-    network = Network(conf)
-    index_batches(conf["batch_size"])
+    network = Network(conf, index_batches(conf["batch_size"]))
+    network.fit()
 
 
 def main():
