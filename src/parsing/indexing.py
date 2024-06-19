@@ -13,7 +13,7 @@ def get_indicies(batch_size: int, count: int) -> np.ndarray:
     return np.array(res)
 
 
-def index_batches(batch_size: int) -> pd.DataFrame:
+def indexing(batch_size: int) -> pd.DataFrame:
     """loads training data and returns with batch numbers"""
     data = pd.DataFrame([])
     try:

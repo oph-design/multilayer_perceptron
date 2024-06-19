@@ -17,7 +17,7 @@ def normalize_data(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def label_data(data: pd.DataFrame) -> pd.DataFrame:
-    """swapes house values out for 1s and 0s"""
+    """swaps diagnosis values out for 1s and 0s"""
     res = data.copy()
     res["diagnosis"] = (res["diagnosis"] == "M").astype(int)
     return res

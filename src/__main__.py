@@ -1,5 +1,5 @@
 from format_data import split_data
-from train_model import read_conf, index_batches
+from parsing import read_conf, indexing
 from train_model import Network
 import sys
 
@@ -42,7 +42,7 @@ def train(argc: int, argv: list) -> None:
     if argc >= 2:
         location = argv[1]
     conf = read_conf(location)
-    network = Network(conf, index_batches(conf["batch_size"]))
+    network = Network(conf, indexing(conf["batch_size"]))
     network.fit()
 
 
