@@ -11,6 +11,6 @@ def soft_max(x: np.ndarray) -> np.ndarray:
     return np.exp(x) / np.sum(np.exp(x))
 
 
-def binary_cross_entropy(y: np.ndarray, p: np.ndarray) -> float:
+def binary_cross_entropy(y: np.ndarray, p: np.ndarray) -> np.ndarray:
     """calculates error for the current prediction"""
-    return float(1 / len(y) * np.sum(y * np.log(p) + (1 - y) * np.log(p)))
+    return -(y * np.log(p) + (1 - y) * np.log(p))
