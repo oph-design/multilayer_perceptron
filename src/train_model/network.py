@@ -20,21 +20,24 @@ class Network:
         self.data = data
         self.epochs = conf["epochs"]
         self.rate = conf["learning_rate"]
+        self.size = conf["batch_size"]
         self.dim = np.insert([30, 2], 1, conf["layer"])
-        self.count = len(self.dim) - 1
+        self.count = len(self.dim)
         self.layers = [
-            Layer(self.dim[x - 1], self.dim[x]) for x in range(0, self.count)
+            Layer(self.dim[x - 1], self.dim[x], self.size) for x in range(1, self.count)
         ]
 
     def fit(self):
         """performs gradient descent for all layers in epoch time"""
         for i in range(self.epochs):
-            batch = self.data.loc[self.data["Batch"] == i % 8].values
-            y = format_array(batch[:, 1:2].flatten())
+            batch = self.data.loc[self.data["Batch"] == i % self.size].values
+            y = batch[:, 1:2].flatten()
             x = batch[:, 2:]
-            p = self.forwardprop(x).flatten()
-            error = binary_cross_entropy(y, p)
-            self.backwardprop(error, self.layers[-1].get_weights())
+            p = self.forwardprop(x)
+            error = np.column_stack(
+                (binary_cross_entropy(y, p[:, 0]), binary_cross_entropy(1 - y, p[:, 1]))
+            )
+            self.backwardprop(error)
             self.train_model()
 
     def forwardprop(self, batch: np.ndarray) -> np.ndarray:
@@ -46,12 +49,13 @@ class Network:
             res.append(data)
         return np.array(res)
 
-    def backwardprop(self, error: np.ndarray, weights: np.ndarray) -> None:
+    def backwardprop(self, errors: np.ndarray) -> None:
         """calculates errors for all layers"""
-        layers = self.layers[::-1]
-        for layer in layers[1:]:
-            error = layer.calculate_error(error, weights)
-            weights = layer.get_weights()
+        for index, error in enumerate(errors):
+            weights = self.layers[-1].get_weights()
+            for layer in self.layers[::-1][1:]:
+                error = layer.calculate_error(error, weights, index)
+                weights = layer.get_weights()
 
     def train_model(self) -> None:
         """adjusts paramters for all layers"""
