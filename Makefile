@@ -26,7 +26,7 @@ test: $(NAME)
 	@. $(NAME); python3 src $(CONF) $(DATA) 0.8
 
 clean:
-	@find . -type d -name "__pycache__" -exec rm -rf {} +
+	@find ./src -type d -name "__pycache__" -exec rm -rf {} +
 	@echo "$(GREEN)Caches cleaned!$(WHITE)"
 
 fclean: clean
