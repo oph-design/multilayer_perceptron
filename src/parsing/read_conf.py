@@ -39,7 +39,7 @@ translate = {
 }
 
 
-res = {
+conf = {
     "layer": [24, 24, 24],
     "epochs": 84,
     "loss": "binaryCrossentropy",
@@ -54,14 +54,14 @@ def read_conf(location: str) -> dict:
         config = open(location, "r")
     except Exception as e:
         print(e)
-        return res
+        return conf
     lines = config.readlines()
     for line in lines:
         for key in translate:
             try:
                 pos = line.find(key) + len(key) + 1
                 if line.find(key) != -1:
-                    res[key] = translate[key](line[pos:].strip())
+                    conf[key] = translate[key](line[pos:].strip())
             except Exception as e:
                 print(f"{e} chose default instead")
-    return res
+    return conf

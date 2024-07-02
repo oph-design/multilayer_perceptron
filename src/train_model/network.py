@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from .layer import Layer
-from .functions import binary_cross_entropy
+from .mathematics import binary_cross_entropy
 
 
 def format_array(source: np.ndarray) -> np.ndarray:
@@ -21,9 +21,9 @@ class Network:
         self.epochs = conf["epochs"]
         self.rate = conf["learning_rate"]
         self.dim = np.insert([30, 2], 1, conf["layer"])
-        self.count = len(self.dim)
+        self.count = len(self.dim) - 1
         self.layers = [
-            Layer(self.dim[x - 1], self.dim[x]) for x in range(1, self.count)
+            Layer(self.dim[x - 1], self.dim[x]) for x in range(0, self.count)
         ]
 
     def fit(self):
@@ -33,8 +33,9 @@ class Network:
             y = format_array(batch[:, 1:2].flatten())
             x = batch[:, 2:]
             p = self.forwardprop(x).flatten()
-            loss = np.mean(binary_cross_entropy(y, p))
-            print(loss)
+            error = binary_cross_entropy(y, p)
+            self.backwardprop(error, self.layers[-1].get_weights())
+            self.train_model()
 
     def forwardprop(self, batch: np.ndarray) -> np.ndarray:
         """calculates the prediction for the current weights"""
@@ -44,3 +45,15 @@ class Network:
                 data = layer.get_neurons(data)
             res.append(data)
         return np.array(res)
+
+    def backwardprop(self, error: np.ndarray, weights: np.ndarray) -> None:
+        """calculates errors for all layers"""
+        layers = self.layers[::-1]
+        for layer in layers[1:]:
+            error = layer.calculate_error(error, weights)
+            weights = layer.get_weights()
+
+    def train_model(self) -> None:
+        """adjusts paramters for all layers"""
+        for layer in self.layers:
+            layer.apply_error(self.rate)
