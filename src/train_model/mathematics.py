@@ -24,3 +24,9 @@ def binary_cross_entropy(y: np.ndarray, p: np.ndarray) -> np.ndarray:
 def bce_prime(y: np.ndarray, p: np.ndarray) -> np.ndarray:
     """calculates error derivative for the current prediction"""
     return (p - y) / p * (1 - p)
+
+
+def cumulative_error(y: np.ndarray, p: np.ndarray) -> np.float_:
+    return np.mean(
+        (binary_cross_entropy(y, p[0]) + binary_cross_entropy(1 - y, p[1])) / 2
+    )

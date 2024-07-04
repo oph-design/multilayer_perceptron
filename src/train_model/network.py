@@ -1,14 +1,15 @@
 import numpy as np
 import pandas as pd
 from .layer import Layer
-from .mathematics import bce_prime, sigmoid_prime, sigmoid
+from .mathematics import bce_prime, cumulative_error, sigmoid_prime, sigmoid
 
 
 class Network:
 
-    def __init__(self, conf: dict, data: pd.DataFrame):
+    def __init__(self, conf: dict, data_train: pd.DataFrame, data_test: pd.DataFrame):
         """initializes layers of the neural Network based on conf"""
-        self.data = data
+        self.data_t = data_train
+        self.data_v = data_test
         self.epochs = conf["epochs"]
         self.rate = conf["learning_rate"]
         self.size = conf["batch_size"]
@@ -20,11 +21,14 @@ class Network:
 
     def fit(self):
         """performs gradient descent for all layers in epoch time"""
+        print(f"x_train shape: {self.data_t.shape[0]}, {self.data_t.shape[1] - 2}")
+        print(f"x_valid shape: {self.data_v.shape[0]}, {self.data_t.shape[1] - 2}")
         for i in range(self.epochs):
-            batch = self.data.loc[self.data["Batch"] == i % self.size].values
+            batch = self.data_t.loc[self.data_t["Batch"] == i % self.size].values
             target = batch[:, 1:2].flatten()
             input = batch[:, 2:]
             prediction = self.feed_forward(input)
+            self.print_status(i, prediction, target)
             error = self.calc_out_layer_error(target, prediction)
             self.propagate_backwards(error)
             self.adjust_parameters(input)
@@ -62,3 +66,11 @@ class Network:
                 prev_activation = sigmoid(layer.weighted_sums)
         for layer in self.layers:
             layer.apply_changes(self.size)
+
+    def print_status(self, i: int, p_train: np.ndarray, y_train: np.ndarray) -> None:
+        validate = self.data_v.loc[self.data_v["Batch"] == i % self.size].values
+        p_val = self.feed_forward(validate[:, 2:])
+        e_train = str(cumulative_error(y_train, p_train.T))[:6]
+        e_val = str(cumulative_error(validate[:, 1:2].flatten(), p_val.T))[:6]
+        count = str(i + 1) if i + 1 > 9 else "0" + str(i + 1)
+        print(f"epoch {count}/{self.epochs} - loss: {e_train} - val_loss: {e_val}")

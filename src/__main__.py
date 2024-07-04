@@ -42,7 +42,9 @@ def train(argc: int, argv: list) -> None:
     if argc >= 2:
         location = argv[1]
     conf = read_conf(location)
-    network = Network(conf, indexing(conf["batch_size"]))
+    train = indexing("datasets/data_train.csv", conf["batch_size"])
+    test = indexing("datasets/data_test.csv", conf["batch_size"])
+    network = Network(conf, train, test)
     network.fit()
 
 
