@@ -1,12 +1,15 @@
 from format_data import split_data
 from parsing import read_conf, indexing
 from train_model import Network
+import matplotlib.pyplot as plt
 import sys
 
 BB = "\033[1;34m"
 B = "\033[34m"
 Y = "\033[33m"
 R = "\033[0m"
+
+plt.rcParams["figure.figsize"] = [20, 5]
 
 
 def greet_user() -> None:
@@ -46,6 +49,7 @@ def train(argc: int, argv: list) -> None:
     test = indexing("datasets/data_test.csv", conf["batch_size"])
     network = Network(conf, train, test)
     network.fit()
+    plt.close("all")
 
 
 def main():

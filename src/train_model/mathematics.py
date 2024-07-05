@@ -30,3 +30,7 @@ def cumulative_error(y: np.ndarray, p: np.ndarray) -> np.float_:
     return np.mean(
         (binary_cross_entropy(y, p[0]) + binary_cross_entropy(1 - y, p[1])) / 2
     )
+
+
+def accuracy(y: np.ndarray, p: np.ndarray) -> np.float_:
+    return np.mean((np.argmax(p, axis=1) == y))

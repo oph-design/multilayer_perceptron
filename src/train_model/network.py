@@ -1,23 +1,29 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from .layer import Layer
-from .mathematics import bce_prime, cumulative_error, sigmoid_prime, sigmoid
+from .visualizer import Visualizer
+from .mathematics import bce_prime, cumulative_error, sigmoid_prime, sigmoid, accuracy
 
 
 class Network:
 
     def __init__(self, conf: dict, data_train: pd.DataFrame, data_test: pd.DataFrame):
         """initializes layers of the neural Network based on conf"""
+        plt.ion()
+        figure, axis = plt.subplots(1, 2)
+        dim = np.insert([30, 2], 1, conf["layer"])
         self.data_t = data_train
         self.data_v = data_test
         self.epochs = conf["epochs"]
         self.rate = conf["learning_rate"]
         self.size = conf["batch_size"]
-        self.dim = np.insert([30, 2], 1, conf["layer"])
-        self.layers = [
-            Layer(self.dim[x - 1], self.dim[x], self.size)
-            for x in range(1, len(self.dim))
-        ]
+        self.accuracy = Visualizer(self.epochs, axis[0], "Accuracy")
+        self.loss = Visualizer(self.epochs, axis[1], "Loss")
+        self.layers = [Layer(dim[x - 1], dim[x], self.size) for x in range(1, len(dim))]
+
+    def __del__(self):
+        plt.close("all")
 
     def fit(self):
         """performs gradient descent for all layers in epoch time"""
@@ -28,7 +34,7 @@ class Network:
             target = batch[:, 1:2].flatten()
             input = batch[:, 2:]
             prediction = self.feed_forward(input)
-            self.print_status(i, prediction, target)
+            self.status(i, prediction, target)
             error = self.calc_out_layer_error(target, prediction)
             self.propagate_backwards(error)
             self.adjust_parameters(input)
@@ -67,10 +73,15 @@ class Network:
         for layer in self.layers:
             layer.apply_changes(self.size)
 
-    def print_status(self, i: int, p_train: np.ndarray, y_train: np.ndarray) -> None:
+    def status(self, i: int, p_train: np.ndarray, y_train: np.ndarray) -> None:
+        """prints epochs status and advances the accuracy and loss graphs"""
         validate = self.data_v.loc[self.data_v["Batch"] == i % self.size].values
+        y_val = validate[:, 1:2].flatten()
         p_val = self.feed_forward(validate[:, 2:])
         e_train = str(cumulative_error(y_train, p_train.T))[:6]
         e_val = str(cumulative_error(validate[:, 1:2].flatten(), p_val.T))[:6]
         count = str(i + 1) if i + 1 > 9 else "0" + str(i + 1)
+        self.loss.plot_data(e_train, e_val)
+        self.accuracy.plot_data(accuracy(y_train, p_train), accuracy(y_val, p_val))
         print(f"epoch {count}/{self.epochs} - loss: {e_train} - val_loss: {e_val}")
+        self.accuracy.draw_plot()
