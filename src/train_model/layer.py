@@ -3,26 +3,25 @@ from .mathematics import sigmoid, sigmoid_prime
 
 
 class Layer:
-
     def __init__(self, prev_count: int, count: int, size: int):
         """initializes  weights and biases"""
         self.biases = np.random.rand(count)
         self.weights = np.random.rand(count, prev_count)
-        self.weighted_sums = np.zeros(count)
+        self.weighted_sums = np.zeros((size, count))
         self.errors = np.zeros((size, count))
         self.bias_delta = np.zeros(self.biases.shape)
         self.weight_delta = np.zeros(self.weights.shape)
 
-    def get_neurons(self, prev_neurons: np.ndarray) -> np.ndarray:
+    def get_neurons(self, prev_neurons: np.ndarray, index: int) -> np.ndarray:
         """returns the activation for all neurons"""
-        self.weighted_sums = np.dot(self.weights, prev_neurons) + self.biases
-        return sigmoid(self.weighted_sums)
+        self.weighted_sums[index] = np.dot(self.weights, prev_neurons) + self.biases
+        return sigmoid(self.weighted_sums[index])
 
     def calculate_error(
         self, post_weights: np.ndarray, post_error: np.ndarray, index: int
     ) -> np.ndarray:
         """calculate the error of each neuron of the layer"""
-        gradient = sigmoid_prime(self.weighted_sums)
+        gradient = sigmoid_prime(self.weighted_sums[index])
         self.errors[index] = np.dot(post_weights.T, post_error) * gradient
         return self.errors[index]
 

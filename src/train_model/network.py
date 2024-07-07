@@ -7,7 +7,6 @@ from .mathematics import bce_prime, cumulative_error, sigmoid_prime, sigmoid, ac
 
 
 class Network:
-
     def __init__(self, conf: dict, data_train: pd.DataFrame, data_test: pd.DataFrame):
         """initializes layers of the neural Network based on conf"""
         plt.ion()
@@ -42,21 +41,22 @@ class Network:
     def feed_forward(self, batch: np.ndarray) -> np.ndarray:
         """calculates the prediction for the current weights"""
         res = []
-        for data in batch:
+        for index, data in enumerate(batch):
             for layer in self.layers:
-                data = layer.get_neurons(data)
+                data = layer.get_neurons(data, index)
             res.append(data)
         return np.array(res)
 
     def calc_out_layer_error(self, y: np.ndarray, p: np.ndarray) -> np.ndarray:
         """calculates the error in the output layer"""
-        gradient = sigmoid_prime(self.layers[-1].weighted_sums)
+        gradient = sigmoid_prime(self.layers[-1].weighted_sums.T)
         error_malignent = bce_prime(y, p[:, 0]) * gradient[0]
         error_benign = bce_prime(1 - y, p[:, 1]) * gradient[1]
         return np.column_stack((error_malignent, error_benign))
 
     def propagate_backwards(self, errors: np.ndarray) -> None:
         """calculates errors for all layers"""
+        self.layers[-1].errors = errors
         for index, error in enumerate(errors):
             weights = self.layers[-1].weights
             for layer in self.layers[::-1][1:]:
@@ -69,7 +69,7 @@ class Network:
             prev_activation = input
             for layer in self.layers:
                 layer.learn(self.rate, prev_activation, index)
-                prev_activation = sigmoid(layer.weighted_sums)
+                prev_activation = sigmoid(layer.weighted_sums[index])
         for layer in self.layers:
             layer.apply_changes(self.size)
 
@@ -78,10 +78,12 @@ class Network:
         validate = self.data_v.loc[self.data_v["Batch"] == i % self.size].values
         y_val = validate[:, 1:2].flatten()
         p_val = self.feed_forward(validate[:, 2:])
-        e_train = str(cumulative_error(y_train, p_train.T))[:6]
-        e_val = str(cumulative_error(validate[:, 1:2].flatten(), p_val.T))[:6]
+        e_train = cumulative_error(y_train, p_train.T)
+        e_val = cumulative_error(validate[:, 1:2].flatten(), p_val.T)
         count = str(i + 1) if i + 1 > 9 else "0" + str(i + 1)
         self.loss.plot_data(e_train, e_val)
         self.accuracy.plot_data(accuracy(y_train, p_train), accuracy(y_val, p_val))
-        print(f"epoch {count}/{self.epochs} - loss: {e_train} - val_loss: {e_val}")
+        print(
+            f"epoch {count}/{self.epochs} - loss: {str(e_train)[:6]} - val_loss: {str(e_val)[:6]}"
+        )
         self.accuracy.draw_plot()
