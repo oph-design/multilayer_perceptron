@@ -21,6 +21,10 @@ def binary_cross_entropy(y: np.ndarray, p: np.ndarray) -> np.ndarray:
     return -(y * np.log(p) + (1 - y) * np.log(p))
 
 
+def xavier_init(dim1: int, dim2: int = 1):
+    return np.random.uniform(-0.1, 0.1, size=(dim1, dim2))
+
+
 def accuracy(y: np.ndarray, p: np.ndarray) -> np.float_:
     opposite = 1 - y
     formated = np.empty((len(y) + len(opposite),), dtype=y.dtype)

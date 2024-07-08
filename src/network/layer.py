@@ -3,14 +3,14 @@ from .mathematics import sigmoid, sigmoid_prime, soft_max
 
 
 class Layer:
-    def __init__(self, prev_count: int, count: int, size: int, activation: int):
+    def __init__(self, w: np.ndarray, b: np.ndarray, size: int, activation: int):
         """initializes  weights and biases"""
-        self.biases = np.random.uniform(-0.1, 0.1, size=count)
-        self.weights = np.random.uniform(-0.1, 0.1, size=(count, prev_count))
-        self.weighted_sums = np.zeros((size, count))
-        self.errors = np.zeros((size, count))
-        self.bias_delta = np.zeros(self.biases.shape)
-        self.weight_delta = np.zeros(self.weights.shape)
+        self.biases = b
+        self.weights = w
+        self.weighted_sums = np.zeros((size, len(b)))
+        self.errors = np.zeros((size, len(b)))
+        self.bias_delta = np.zeros(b.shape)
+        self.weight_delta = np.zeros(w.shape)
         self.activation = sigmoid if activation != 0 else soft_max
 
     def get_activation(self, index):

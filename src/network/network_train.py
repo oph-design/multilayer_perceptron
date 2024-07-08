@@ -1,28 +1,22 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from .layer import Layer
+from .network_base import Network_Base
 from .visualizer import Visualizer
 from .mathematics import binary_cross_entropy, accuracy
 
 
-class Network:
+class Network_Train(Network_Base):
     def __init__(self, conf: dict, data_train: pd.DataFrame, data_test: pd.DataFrame):
         """initializes layers of the neural Network based on conf"""
         plt.ion()
         figure, axis = plt.subplots(1, 2)
         dim = np.insert([30, 2], 1, conf["layer"])
-        self.data_t = data_train
-        self.data_v = data_test
+        super().__init__(data_train, data_test, conf["batch_size"], dim)
         self.epochs = conf["epochs"]
         self.rate = conf["learning_rate"]
-        self.size = conf["batch_size"]
         self.accuracy = Visualizer(self.epochs, axis[0], "Accuracy")
         self.loss = Visualizer(self.epochs, axis[1], "Loss")
-        self.layers = [
-            Layer(dim[x - 1], dim[x], self.size, x % len(dim))
-            for x in range(1, len(dim))
-        ]
 
     def __del__(self):
         plt.close("all")
@@ -43,15 +37,6 @@ class Network:
             error = self.calc_out_layer_error(target, prediction)
             self.propagate_backwards(error)
             self.adjust_parameters(input)
-
-    def feed_forward(self, batch: np.ndarray) -> np.ndarray:
-        """calculates the prediction for the current weights"""
-        res = []
-        for index, data in enumerate(batch):
-            for layer in self.layers:
-                data = layer.get_neurons(data, index)
-            res.append(data)
-        return np.array(res)
 
     def calc_out_layer_error(self, y: np.ndarray, p: np.ndarray) -> np.ndarray:
         """calculates the error in the output layer"""

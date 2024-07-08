@@ -1,6 +1,6 @@
 from format_data import split_data
 from parsing import read_conf, indexing
-from train_model import Network
+from network import Network_Train
 import matplotlib.pyplot as plt
 import sys
 
@@ -47,10 +47,9 @@ def train(argc: int, argv: list) -> None:
     conf = read_conf(location)
     train = indexing("datasets/data_train.csv", conf["batch_size"])
     test = indexing("datasets/data_test.csv", conf["batch_size"])
-    print(train.shape)
     if train.shape[1] != 32 or test.shape[1] != 32:
         return print("invalid input: data must have 32 columns")
-    network = Network(conf, train, test)
+    network = Network_Train(conf, train, test)
     network.fit()
     network.save_to_file()
 
