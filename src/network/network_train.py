@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from .network_base import Network_Base
 from .visualizer import Visualizer
-from .mathematics import binary_cross_entropy, accuracy
+from .mathematics import binary_cross_entropy, accuracy, calc_error_gradient
 
 
 class Network_Train(Network_Base):
@@ -34,19 +34,9 @@ class Network_Train(Network_Base):
             input = batch[:, 2:]
             prediction = self.feed_forward(input)
             self.status(i, prediction, target, p_val, y_val)
-            error = self.calc_out_layer_error(target, prediction)
+            error = calc_error_gradient(target, prediction)
             self.propagate_backwards(error)
             self.adjust_parameters(input)
-
-    def calc_out_layer_error(self, y: np.ndarray, p: np.ndarray) -> np.ndarray:
-        """calculates the error in the output layer"""
-        error_malignent = y - p[:, 0]
-        print(y)
-        print(1 - y)
-        print(p[:, 0])
-        print(p[:, 1])
-        error_benign = (1 - y) - p[:, 1]
-        return np.column_stack((error_benign, error_malignent))
 
     def propagate_backwards(self, errors: np.ndarray) -> None:
         """calculates errors for all layers"""

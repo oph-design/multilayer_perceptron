@@ -25,6 +25,11 @@ def xavier_init(dim1: int, dim2: int = 1):
     return np.random.uniform(-0.1, 0.1, size=(dim1, dim2))
 
 
+def calc_error_gradient(y: np.ndarray, p: np.ndarray) -> np.ndarray:
+    """calculates the error in the output layer"""
+    return np.column_stack(((1 - y) - p[:, 1], y - p[:, 0]))
+
+
 def accuracy(y: np.ndarray, p: np.ndarray) -> np.float_:
     opposite = 1 - y
     formated = np.empty((len(y) + len(opposite),), dtype=y.dtype)
