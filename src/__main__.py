@@ -52,6 +52,7 @@ def train(argc: int, argv: list) -> None:
         return print("invalid input: data must have 32 columns")
     network = Network(conf, train, test)
     network.fit()
+    network.save_to_file()
 
 
 def main():

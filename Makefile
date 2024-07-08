@@ -1,6 +1,7 @@
 DIR  = env
 NAME = $(DIR)/bin/activate
 RSRC = datasets
+SAVE = models
 CONF = configs/example.conf
 DATA = ressources/data.csv
 
@@ -9,7 +10,7 @@ WHITE	= \033[0m
 
 all: $(NAME)
 
-$(NAME): $(RSRC)
+$(NAME): $(RSRC) $(SAVE)
 	@python3 -m pip install --upgrade pip
 	@python3 -m pip install virtualenv
 	@virtualenv $(DIR)
@@ -18,6 +19,9 @@ $(NAME): $(RSRC)
 
 $(RSRC):
 	@mkdir -p $(RSRC)
+
+$(SAVE):
+	@mkdir -p $(SAVE)
 
 run: $(NAME)
 	@. $(NAME); python3 src

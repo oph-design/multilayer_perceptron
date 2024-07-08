@@ -91,3 +91,13 @@ class Network:
         self.accuracy.plot_data(accuracy(y_train, p_train), accuracy(y_val, p_val))
         print(f"epoch {count}/{self.epochs} - loss: {e_train} - val_loss: {e_val}")
         self.accuracy.draw_plot()
+
+    def save_to_file(self):
+        name = input("name your model: ")
+        file = "models/" + name + ".npz"
+        network_dict = {}
+        for i, layer in enumerate(self.layers):
+            network_dict[f"weights_l{i}"] = layer.weights
+            network_dict[f"biases_l{i}"] = layer.biases
+        np.savez(file, **network_dict)
+        print(f"> saving model '{name}' to ./models ...")
