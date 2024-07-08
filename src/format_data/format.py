@@ -5,7 +5,7 @@ from .columns import colnames
 
 def normalize(column: Series) -> Series:
     """calculates normalized values for each column"""
-    return (column - column.min()) / (column.max() - column.min())
+    return (column - column.mean()) / column.std()
 
 
 def normalize_data(data: pd.DataFrame) -> pd.DataFrame:
@@ -36,4 +36,4 @@ def split_data(location: str, split: float) -> None:
     train_data = data.drop(index=list(test_data.index))
     test_data.to_csv("datasets/data_test.csv", index=False)
     train_data.to_csv("datasets/data_train.csv", index=False)
-    print("Data successfully formated and written into datasets/")
+    print("Data successfully formated and written into ./datasets/")

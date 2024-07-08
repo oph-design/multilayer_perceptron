@@ -26,5 +26,5 @@ class Visualizer:
     def draw_plot(self):
         plt.show()
         plt.pause(0.005)
-        if self.count == len(self.x) - 1:
+        if self.count == len(self.x):
             plt.pause(3)

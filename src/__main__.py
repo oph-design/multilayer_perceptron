@@ -47,9 +47,11 @@ def train(argc: int, argv: list) -> None:
     conf = read_conf(location)
     train = indexing("datasets/data_train.csv", conf["batch_size"])
     test = indexing("datasets/data_test.csv", conf["batch_size"])
+    print(train.shape)
+    if train.shape[1] != 32 or test.shape[1] != 32:
+        return print("invalid input: data must have 32 columns")
     network = Network(conf, train, test)
     network.fit()
-    plt.close("all")
 
 
 def main():

@@ -5,8 +5,8 @@ from .mathematics import sigmoid, sigmoid_prime, soft_max
 class Layer:
     def __init__(self, prev_count: int, count: int, size: int, activation: int):
         """initializes  weights and biases"""
-        self.biases = np.random.rand(count) / 100
-        self.weights = np.random.rand(count, prev_count) / 100
+        self.biases = np.random.uniform(-0.1, 0.1, size=count)
+        self.weights = np.random.uniform(-0.1, 0.1, size=(count, prev_count))
         self.weighted_sums = np.zeros((size, count))
         self.errors = np.zeros((size, count))
         self.bias_delta = np.zeros(self.biases.shape)
@@ -37,7 +37,7 @@ class Layer:
 
     def apply_changes(self, size: int) -> None:
         """means the adjustments and applys them to the weights"""
-        self.biases = self.biases - self.bias_delta
-        self.weights = self.weights - self.weight_delta
+        self.biases = self.biases - self.bias_delta / size
+        self.weights = self.weights - self.weight_delta / size
         self.bias_delta = np.zeros(self.biases.shape)
         self.weight_delta = np.zeros(self.weights.shape)
