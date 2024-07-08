@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from .layer import Layer
 from .visualizer import Visualizer
-from .mathematics import bce_prime, cumulative_error, sigmoid_prime, sigmoid, accuracy
+from .mathematics import binary_cross_entropy, accuracy
 
 
 class Network:
@@ -19,7 +19,10 @@ class Network:
         self.size = conf["batch_size"]
         self.accuracy = Visualizer(self.epochs, axis[0], "Accuracy")
         self.loss = Visualizer(self.epochs, axis[1], "Loss")
-        self.layers = [Layer(dim[x - 1], dim[x], self.size) for x in range(1, len(dim))]
+        self.layers = [
+            Layer(dim[x - 1], dim[x], self.size, x % len(dim))
+            for x in range(1, len(dim))
+        ]
 
     def __del__(self):
         plt.close("all")
@@ -30,10 +33,13 @@ class Network:
         print(f"x_valid shape: {self.data_v.shape[0]}, {self.data_t.shape[1] - 2}")
         for i in range(self.epochs):
             batch = self.data_t.loc[self.data_t["Batch"] == i % self.size].values
+            validate = self.data_v.loc[self.data_v["Batch"] == i % self.size].values
+            y_val = validate[:, 1:2].flatten()
+            p_val = self.feed_forward(validate[:, 2:])
             target = batch[:, 1:2].flatten()
             input = batch[:, 2:]
             prediction = self.feed_forward(input)
-            self.status(i, prediction, target)
+            self.status(i, prediction, target, p_val, y_val)
             error = self.calc_out_layer_error(target, prediction)
             self.propagate_backwards(error)
             self.adjust_parameters(input)
@@ -49,10 +55,13 @@ class Network:
 
     def calc_out_layer_error(self, y: np.ndarray, p: np.ndarray) -> np.ndarray:
         """calculates the error in the output layer"""
-        gradient = sigmoid_prime(self.layers[-1].weighted_sums.T)
-        error_malignent = bce_prime(y, p[:, 0]) * gradient[0]
-        error_benign = bce_prime(1 - y, p[:, 1]) * gradient[1]
-        return np.column_stack((error_malignent, error_benign))
+        error_malignent = y - p[:, 0]
+        print(y)
+        print(1 - y)
+        print(p[:, 0])
+        print(p[:, 1])
+        error_benign = (1 - y) - p[:, 1]
+        return np.column_stack((error_benign, error_malignent))
 
     def propagate_backwards(self, errors: np.ndarray) -> None:
         """calculates errors for all layers"""
@@ -69,21 +78,16 @@ class Network:
             prev_activation = input
             for layer in self.layers:
                 layer.learn(self.rate, prev_activation, index)
-                prev_activation = sigmoid(layer.weighted_sums[index])
+                prev_activation = layer.get_activation(index)
         for layer in self.layers:
             layer.apply_changes(self.size)
 
-    def status(self, i: int, p_train: np.ndarray, y_train: np.ndarray) -> None:
+    def status(self, i: int, p_train, y_train, p_val, y_val) -> None:
         """prints epochs status and advances the accuracy and loss graphs"""
-        validate = self.data_v.loc[self.data_v["Batch"] == i % self.size].values
-        y_val = validate[:, 1:2].flatten()
-        p_val = self.feed_forward(validate[:, 2:])
-        e_train = cumulative_error(y_train, p_train.T)
-        e_val = cumulative_error(validate[:, 1:2].flatten(), p_val.T)
+        e_train = np.mean(binary_cross_entropy(y_train, p_train.T[0]))
+        e_val = np.mean(binary_cross_entropy(y_val, p_val.T[0]))
         count = str(i + 1) if i + 1 > 9 else "0" + str(i + 1)
         self.loss.plot_data(e_train, e_val)
         self.accuracy.plot_data(accuracy(y_train, p_train), accuracy(y_val, p_val))
-        print(
-            f"epoch {count}/{self.epochs} - loss: {str(e_train)[:6]} - val_loss: {str(e_val)[:6]}"
-        )
+        print(f"epoch {count}/{self.epochs} - loss: {e_train} - val_loss: {e_val}")
         self.accuracy.draw_plot()

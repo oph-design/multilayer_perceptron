@@ -21,16 +21,11 @@ def binary_cross_entropy(y: np.ndarray, p: np.ndarray) -> np.ndarray:
     return -(y * np.log(p) + (1 - y) * np.log(p))
 
 
-def bce_prime(y: np.ndarray, p: np.ndarray) -> np.ndarray:
-    """calculates error derivative for the current prediction"""
-    return (p - y) / p * (1 - p)
-
-
-def cumulative_error(y: np.ndarray, p: np.ndarray) -> np.float_:
-    return np.mean(
-        (binary_cross_entropy(y, p[0]) + binary_cross_entropy(1 - y, p[1])) / 2
-    )
-
-
 def accuracy(y: np.ndarray, p: np.ndarray) -> np.float_:
-    return np.mean((np.argmax(p, axis=1) == y))
+    opposite = 1 - y
+    formated = np.empty((len(y) + len(opposite),), dtype=y.dtype)
+    formated[0::2] = y
+    formated[1::2] = opposite
+    p = p.flatten()
+    rounded = np.where(p >= 0.5, np.ceil(p), np.floor(p))
+    return np.mean(rounded == formated)
