@@ -18,9 +18,8 @@ def normalize_data(data: pd.DataFrame) -> pd.DataFrame:
 
 def label_data(data: pd.DataFrame) -> pd.DataFrame:
     """swaps diagnosis values out for 1s and 0s"""
-    res = data.copy()
-    res["diagnosis"] = (res["diagnosis"] == "M").astype(int)
-    return res
+    data["diagnosis"] = (data["diagnosis"] == "M").astype(int)
+    return data
 
 
 def split_data(location: str, split: float) -> None:
@@ -36,4 +35,4 @@ def split_data(location: str, split: float) -> None:
     train_data = data.drop(index=list(test_data.index))
     test_data.to_csv("datasets/data_test.csv", index=False)
     train_data.to_csv("datasets/data_train.csv", index=False)
-    print("Data successfully formated and written into ./datasets/")
+    print("> saving data_train and data_test to ./datasets/ ...")

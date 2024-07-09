@@ -19,7 +19,7 @@ class Visualizer:
         self.update_sets(primary_update, secondary_update)
         self.axis.clear()
         self.axis.plot(self.x, self.primary, color="b")
-        self.axis.plot(self.x, self.secondary, color="orange")
+        self.axis.plot(self.x, self.secondary, color="orange", linestyle="dashed")
         self.axis.set_title(self.title)
         self.count += 1
 

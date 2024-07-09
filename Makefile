@@ -1,7 +1,7 @@
 DIR  = env
 NAME = $(DIR)/bin/activate
 RSRC = datasets
-SAVE = models
+RSLT = results
 CONF = configs/example.conf
 DATA = ressources/data.csv
 
@@ -10,7 +10,7 @@ WHITE	= \033[0m
 
 all: $(NAME)
 
-$(NAME): $(RSRC) $(SAVE)
+$(NAME): $(RSRC) $(RSLT)
 	@python3 -m pip install --upgrade pip
 	@python3 -m pip install virtualenv
 	@virtualenv $(DIR)
@@ -20,14 +20,14 @@ $(NAME): $(RSRC) $(SAVE)
 $(RSRC):
 	@mkdir -p $(RSRC)
 
-$(SAVE):
-	@mkdir -p $(SAVE)
+$(RSLT):
+	@mkdir -p $(RSLT)
+	@mkdir -p $(RSLT)/models/
+	@mkdir -p $(RSLT)/evals/
+
 
 run: $(NAME)
 	@. $(NAME); python3 src
-
-test: $(NAME)
-	@. $(NAME); python3 src $(CONF) $(DATA) 0.8
 
 clean:
 	@find ./src -type d -name "__pycache__" -exec rm -rf {} +

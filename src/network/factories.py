@@ -14,13 +14,14 @@ def train_factory(dim: np.ndarray, batch: int) -> list:
     ]
 
 
-def predict_factory(self, map: dict, length: int) -> list:
+def predict_factory(map: dict, length: int) -> list:
+    dim = int(len(map.keys()) / 2)
     return [
         Layer(
-            map[f"weights_{x}"],
-            map[f"biases_{x}"],
-            self.size,
-            x % length,
+            map[f"weights_l{x}"],
+            map[f"biases_l{x}"],
+            length,
+            x % dim,
         )
-        for x in range(0, length)
+        for x in range(0, dim)
     ]

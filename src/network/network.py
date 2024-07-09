@@ -1,3 +1,4 @@
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from .visualizer import Visualizer
@@ -8,9 +9,9 @@ class Network:
     def __init__(self, data_train, data_val, layers: list, conf: dict | None):
         """initializes layers of the neural Network based on conf"""
         self.layers = layers
-        if conf is not None: 
-            self.data_t = data_train
-            self.data_v = data_val
+        self.data_t = data_train
+        self.data_v = data_val
+        if conf is not None:
             self.epochs = conf["epochs"]
             self.rate = conf["learning_rate"]
             self.size = conf["batch_size"]
@@ -32,12 +33,10 @@ class Network:
             y_val = validate[:, 1:2].flatten()
             p_val = self.make_prediction(validate[:, 2:])
             target = batch[:, 1:2].flatten()
-            input = batch[:, 2:]
-            prediction = self.make_prediction(input)
+            prediction = self.make_prediction(batch[:, 2:])
             self.status(i, prediction, target, p_val, y_val)
-            error = calc_error_gradient(target, prediction)
-            self.propagate_backwards(error)
-            self.adjust_parameters(input)
+            self.propagate_backwards(calc_error_gradient(target, prediction))
+            self.adjust_parameters(batch[:, 2:])
 
     def make_prediction(self, batch: np.ndarray) -> np.ndarray:
         """calculates the prediction for the current weights"""
@@ -79,10 +78,25 @@ class Network:
 
     def save_to_file(self):
         name = input("name your model: ")
-        file = "models/" + name + ".npz"
+        file = "results/models/" + name + ".npz"
         network_dict = {}
         for i, layer in enumerate(self.layers):
             network_dict[f"weights_l{i}"] = layer.weights
             network_dict[f"biases_l{i}"] = layer.biases
         np.savez(file, **network_dict)
-        print(f"> saving model '{name}' to ./models ...")
+        print(f"> saving model '{name}' to ./results/models ...")
+
+    def evalulate_model(self, name: str):
+        y = self.data_v.values[:, 0:1]
+        p = self.make_prediction(self.data_v.values[:, 1:])
+        rounded = np.where(p >= 0.5, np.ceil(p), np.floor(p))
+        result = np.column_stack((y, rounded.T[0])).astype(str)
+        result[result == str(1.0)] = "M"
+        result[result == str(0.0)] = "B"
+        accur = accuracy(y, p)
+        error = np.mean(binary_cross_entropy(y, p.T[0]))
+        print(f"Prediction Error: {error}")
+        print(f"Prediction Accuracy: {accur}")
+        print("> saving prediction to ./results/evals ...")
+        file = pd.DataFrame(result, columns=["Truth", "Prediction"])
+        file.to_csv("results/evals/" + name + ".csv")

@@ -1,10 +1,11 @@
-from format_data import split_data
-from parsing import read_conf, indexing
-from network import Network
-from network import train_factory, predict_factory
-import matplotlib.pyplot as plt
+import os
 import numpy as np
-import sys
+import matplotlib.pyplot as plt
+from format_data import split_data
+from parsing import read_conf, read_data, indexing
+from network import train_factory, predict_factory
+from network import Network
+
 
 BB = "\033[1;34m"
 B = "\033[34m"
@@ -19,12 +20,35 @@ def greet_user() -> None:
     print(f"{BB}---Welcome to Multilayer-Perceptron---")
     print(f"--------------------------------------{R}")
     print(f"{Y}Quick Guide for using the Commandline:")
-    print(f"(1)   Enter your desired mode:{R} 'format', 'train' {Y}or{R} 'predict'")
-    print(f"{Y}(2.1) Additional Argument 'format':{R} enter Path to desired data CSV")
-    print(f"{Y}(2.2) Additional Argument 'format':{R} enter desired train-test split")
-    print(f"{Y}(3)   Additional Argument 'train':{R} enter desired config file")
-    print(f"{Y}(4)   Enter {R}'exit'{Y} to leave the program{R}")
+    print(f"(1)   Enter a command:{R} 'format' 'predict' 'train' 'show' 'config'")
+    print(f"{Y}(2.1) Additional Argument 'format':{R} Path to desired Data CSV")
+    print(f"{Y}(2.2) Additional Argument 'format':{R} desired train-test split")
+    print(f"{Y}(3.1) Additional Argument 'predict':{R} desired model file")
+    print(f"{Y}(3.2) Additional Argument 'predict':{R} Path to desired Data CSV")
+    print(f"{Y}(4)   Additional Argument 'train':{R} desired config file")
+    print(f"{Y}(5)   Enter {R}'exit'{Y} to leave the program{R}")
     print("")
+
+
+def show() -> None:
+    files = [f for f in os.listdir("results/models")]
+    files = [os.path.splitext(f)[0] for f in files]
+    print("available models:")
+    for file in files:
+        print(file)
+
+
+def config() -> None:
+    config = {}
+    name = input("name: ")
+    config["layer"] = input("layer: ")
+    config["epochs"] = input("epochs: ")
+    config["loss"] = input("loss: ")
+    config["batch_size"] = input("batch_size: ")
+    config["learning_rate"] = input("learning_rate: ")
+    with open("configs/" + name + ".conf", "w") as file:
+        for key, value in config.items():
+            file.write(f"{key}: {value}\n")
 
 
 def format(argc: int, argv: list) -> None:
@@ -58,12 +82,23 @@ def train(argc: int, argv: list) -> None:
     network.save_to_file()
 
 
+def predict(argc: int, argv: list) -> None:
+    data_name = "datasets/data_test.csv"
+    if argc < 2 or not os.path.exists("results/models/" + argv[1] + ".npz"):
+        return print("please provide an existing model as argument")
+    if argc > 2:
+        data_name = argv[2]
+    data = read_data(data_name)
+    model = dict(np.load("results/models/" + argv[1] + ".npz"))
+    if data.shape[1] != 31:
+        return print("invalid input: data must have 32 columns")
+    layers = predict_factory(model, data.shape[0])
+    network = Network(data, data, layers, None)
+    network.evalulate_model(argv[1])
+
+
 def main():
     """main function"""
-    if len(sys.argv) == 4:
-        format(3, sys.argv[1:])
-        train(2, sys.argv)
-        return
     greet_user()
     while True:
         entry = input(f"{B}multilayer-perceptron:{R} ")
@@ -75,7 +110,11 @@ def main():
         elif args[0] == "train":
             train(len(args), args)
         elif args[0] == "predict":
-            print("coming soon")
+            predict(len(args), args)
+        elif args[0] == "show":
+            show()
+        elif args[0] == "config":
+            config()
         elif args[0] == "exit":
             print("Have a nice day, Bye Bye!")
             break
