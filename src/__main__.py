@@ -1,7 +1,9 @@
 from format_data import split_data
 from parsing import read_conf, indexing
-from network import Network_Train
+from network import Network
+from network import train_factory, predict_factory
 import matplotlib.pyplot as plt
+import numpy as np
 import sys
 
 BB = "\033[1;34m"
@@ -49,7 +51,9 @@ def train(argc: int, argv: list) -> None:
     test = indexing("datasets/data_test.csv", conf["batch_size"])
     if train.shape[1] != 32 or test.shape[1] != 32:
         return print("invalid input: data must have 32 columns")
-    network = Network_Train(conf, train, test)
+    dim = np.insert([30, 2], 1, conf["layer"])
+    layers = train_factory(dim, conf["batch_size"])
+    network = Network(train, test, layers, conf)
     network.fit()
     network.save_to_file()
 

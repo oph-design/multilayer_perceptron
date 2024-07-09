@@ -1,22 +1,23 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-from .network_base import Network_Base
 from .visualizer import Visualizer
 from .mathematics import binary_cross_entropy, accuracy, calc_error_gradient
 
 
-class Network_Train(Network_Base):
-    def __init__(self, conf: dict, data_train: pd.DataFrame, data_test: pd.DataFrame):
+class Network:
+    def __init__(self, data_train, data_val, layers: list, conf: dict | None):
         """initializes layers of the neural Network based on conf"""
-        plt.ion()
-        figure, axis = plt.subplots(1, 2)
-        dim = np.insert([30, 2], 1, conf["layer"])
-        super().__init__(data_train, data_test, conf["batch_size"], dim)
-        self.epochs = conf["epochs"]
-        self.rate = conf["learning_rate"]
-        self.accuracy = Visualizer(self.epochs, axis[0], "Accuracy")
-        self.loss = Visualizer(self.epochs, axis[1], "Loss")
+        self.layers = layers
+        if conf is not None: 
+            self.data_t = data_train
+            self.data_v = data_val
+            self.epochs = conf["epochs"]
+            self.rate = conf["learning_rate"]
+            self.size = conf["batch_size"]
+            figure, axis = plt.subplots(1, 2)
+            self.accuracy = Visualizer(self.epochs, axis[0], "Accuracy")
+            self.loss = Visualizer(self.epochs, axis[1], "Loss")
+            plt.ion()
 
     def __del__(self):
         plt.close("all")
@@ -29,14 +30,23 @@ class Network_Train(Network_Base):
             batch = self.data_t.loc[self.data_t["Batch"] == i % self.size].values
             validate = self.data_v.loc[self.data_v["Batch"] == i % self.size].values
             y_val = validate[:, 1:2].flatten()
-            p_val = self.feed_forward(validate[:, 2:])
+            p_val = self.make_prediction(validate[:, 2:])
             target = batch[:, 1:2].flatten()
             input = batch[:, 2:]
-            prediction = self.feed_forward(input)
+            prediction = self.make_prediction(input)
             self.status(i, prediction, target, p_val, y_val)
             error = calc_error_gradient(target, prediction)
             self.propagate_backwards(error)
             self.adjust_parameters(input)
+
+    def make_prediction(self, batch: np.ndarray) -> np.ndarray:
+        """calculates the prediction for the current weights"""
+        res = []
+        for index, data in enumerate(batch):
+            for layer in self.layers:
+                data = layer.get_neurons(data, index)
+            res.append(data)
+        return np.array(res)
 
     def propagate_backwards(self, errors: np.ndarray) -> None:
         """calculates errors for all layers"""

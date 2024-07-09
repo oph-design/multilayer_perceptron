@@ -21,20 +21,11 @@ def binary_cross_entropy(y: np.ndarray, p: np.ndarray) -> np.ndarray:
     return -(y * np.log(p) + (1 - y) * np.log(p))
 
 
-def xavier_init(dim1: int, dim2: int = 1):
-    return np.random.uniform(-0.1, 0.1, size=(dim1, dim2))
-
-
 def calc_error_gradient(y: np.ndarray, p: np.ndarray) -> np.ndarray:
     """calculates the error in the output layer"""
     return np.column_stack(((1 - y) - p[:, 1], y - p[:, 0]))
 
 
 def accuracy(y: np.ndarray, p: np.ndarray) -> np.float_:
-    opposite = 1 - y
-    formated = np.empty((len(y) + len(opposite),), dtype=y.dtype)
-    formated[0::2] = y
-    formated[1::2] = opposite
-    p = p.flatten()
     rounded = np.where(p >= 0.5, np.ceil(p), np.floor(p))
-    return np.mean(rounded == formated)
+    return np.mean(np.argmax(rounded, axis=1) == y)

@@ -1,3 +1,3 @@
-from .network_train import Network_Train
+from .network import Network
 from .layer import Layer
-from .mathematics import sigmoid, soft_max, binary_cross_entropy
+from .factories import train_factory, predict_factory
