@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from .visualizer import Visualizer
-from .mathematics import binary_cross_entropy, accuracy, calc_error_gradient
+from .mathematics import binary_cross_entropy, accuracy, calc_error_gradient, r_squared
 
 
 class Network:
@@ -73,8 +73,9 @@ class Network:
         count = str(i + 1) if i + 1 > 9 else "0" + str(i + 1)
         self.loss.plot_data(e_train, e_val)
         self.accuracy.plot_data(accuracy(y_train, p_train), accuracy(y_val, p_val))
-        print(f"epoch {count}/{self.epochs} - loss: {e_train} - val_loss: {e_val}")
+        print(f"epoch {count}/{self.epochs} - loss: {e_train:.4e} - val_loss: {e_val:.4e}")
         self.accuracy.draw_plot()
+        self.loss.draw_plot()
 
     def save_to_file(self):
         name = input("name your model: ")
@@ -93,10 +94,12 @@ class Network:
         result = np.column_stack((y, rounded.T[0])).astype(str)
         result[result == str(1.0)] = "M"
         result[result == str(0.0)] = "B"
-        accur = accuracy(y, p)
+        accur = accuracy(y, p) * 100
         error = np.mean(binary_cross_entropy(y, p.T[0]))
-        print(f"Prediction Error: {error}")
-        print(f"Prediction Accuracy: {accur}")
+        r_sq = r_squared(y, p.T[0])
+        print(f"Prediction Error:       {error}")
+        print(f"Prediction R Squared:   {r_sq}")
+        print(f"Prediction Accuracy:    {accur}%")
         print("> saving prediction to ./results/evals ...")
         file = pd.DataFrame(result, columns=["Truth", "Prediction"])
         file.to_csv("results/evals/" + name + ".csv")

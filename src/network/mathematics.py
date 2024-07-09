@@ -29,3 +29,7 @@ def calc_error_gradient(y: np.ndarray, p: np.ndarray) -> np.ndarray:
 def accuracy(y: np.ndarray, p: np.ndarray) -> np.float_:
     rounded = np.where(p >= 0.5, np.ceil(p), np.floor(p))
     return np.mean(np.argmax(rounded, axis=1) == y)
+
+
+def r_squared(y: np.ndarray, p: np.ndarray) -> np.float_:
+    return 1 - (np.sum(np.power(y - p, 2)) / np.sum(np.power(y - np.mean(y), 2)))

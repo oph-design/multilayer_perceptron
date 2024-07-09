@@ -13,6 +13,7 @@ Y = "\033[33m"
 R = "\033[0m"
 
 plt.rcParams["figure.figsize"] = [20, 5]
+plt.tight_layout()
 
 
 def greet_user() -> None:
