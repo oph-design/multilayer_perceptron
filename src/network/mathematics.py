@@ -13,17 +13,18 @@ def sigmoid_prime(x: np.ndarray) -> np.ndarray:
 
 def soft_max(x: np.ndarray) -> np.ndarray:
     """applys soft_max activation on array"""
-    return np.exp(x) / np.sum(np.exp(x))
+    return np.exp(x - np.max(x)) / np.sum(np.exp(x))
 
 
 def binary_cross_entropy(y: np.ndarray, p: np.ndarray) -> np.ndarray:
     """calculates error for the current prediction"""
-    return -(y * np.log(p) + (1 - y) * np.log(p))
+    p = np.clip(p, 1e-12, 1.0 - 1e-12)
+    return -(y * np.log(p) + (1 - y) * np.log(1 - p))
 
 
 def calc_error_gradient(y: np.ndarray, p: np.ndarray) -> np.ndarray:
     """calculates the error in the output layer"""
-    return np.column_stack(((1 - y) - p[:, 1], y - p[:, 0]))
+    return np.column_stack((y - p[:, 0], (1 - y) - p[:, 1]))
 
 
 def accuracy(y: np.ndarray, p: np.ndarray) -> np.float_:

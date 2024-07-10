@@ -73,7 +73,9 @@ class Network:
         count = str(i + 1) if i + 1 > 9 else "0" + str(i + 1)
         self.loss.plot_data(e_train, e_val)
         self.accuracy.plot_data(accuracy(y_train, p_train), accuracy(y_val, p_val))
-        print(f"epoch {count}/{self.epochs} - loss: {e_train:.4e} - val_loss: {e_val:.4e}")
+        print(
+            f"epoch {count}/{self.epochs} - loss: {e_train:.4e} - val_loss: {e_val:.4e}"
+        )
         self.accuracy.draw_plot()
         self.loss.draw_plot()
 
