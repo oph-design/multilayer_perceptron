@@ -10,6 +10,7 @@ from network import Network
 BB = "\033[1;34m"
 B = "\033[34m"
 Y = "\033[33m"
+F = "\033[1m"
 R = "\033[0m"
 
 plt.rcParams["figure.figsize"] = [20, 5]
@@ -18,25 +19,31 @@ plt.tight_layout()
 
 def greet_user() -> None:
     """print tutorial for user"""
-    print(f"{BB}---Welcome to Multilayer-Perceptron---")
-    print(f"--------------------------------------{R}")
-    print(f"{Y}Quick Guide for using the Commandline:")
-    print(f"(1)   Enter a command:{R} 'format' 'predict' 'train' 'show' 'config'")
-    print(f"{Y}(2.1) Additional Argument 'format':{R} Path to desired Data CSV")
-    print(f"{Y}(2.2) Additional Argument 'format':{R} desired train-test split")
-    print(f"{Y}(3.1) Additional Argument 'predict':{R} desired model file")
-    print(f"{Y}(3.2) Additional Argument 'predict':{R} Path to desired Data CSV")
-    print(f"{Y}(4)   Additional Argument 'train':{R} desired config file")
-    print(f"{Y}(5)   Enter {R}'exit'{Y} to leave the program{R}")
+    print(f"{BB}-----------------Welcome to Multilayer-Perceptron-----------------")
+    print(f"------------------------------------------------------------------{R}")
+    print(f"{Y}Enter a command: 'format' 'train' 'predict' 'config' 'show' 'exit'{R}")
+    print(f"    {Y}Enter 'help' to learn more about the above commands{R}")
+    print(f"     {Y}Tipp: history and autocompletion don't work here{R}")
     print("")
 
 
+def help() -> None:
+    print(f"{F}format [csv] [split]:{R} splits dataset for training and validation")
+    print(f"{F}train [config]:{R} trains model based on config specifications")
+    print(f"{F}predict [model] [csv]:{R} evaluates existing model")
+    print(f"{F}config:{R} prompts for different values to make a new config")
+    print(f"{F}show:{R} lists all available models and config files")
+    print(f"{F}exit:{R} terminates the program")
+
+
 def show() -> None:
+    configs = [f for f in os.listdir("configs/")]
     files = [f for f in os.listdir("results/models")]
     files = [os.path.splitext(f)[0] for f in files]
+    print("available configs:")
+    print(configs)
     print("available models:")
-    for file in files:
-        print(file)
+    print(files)
 
 
 def config() -> None:
@@ -102,7 +109,7 @@ def main():
     """main function"""
     greet_user()
     while True:
-        entry = input(f"{B}multilayer-perceptron:{R} ")
+        entry = input(f"{B}multilayer-perceptron>>{R} ")
         args = entry.split()
         if len(args) == 0:
             continue
@@ -116,6 +123,8 @@ def main():
             show()
         elif args[0] == "config":
             config()
+        elif args[0] == "help":
+            help()
         elif args[0] == "exit":
             print("Have a nice day, Bye Bye!")
             break
