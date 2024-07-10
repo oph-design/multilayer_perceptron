@@ -10,7 +10,7 @@ from network import Network
 BB = "\033[1;34m"
 B = "\033[34m"
 Y = "\033[33m"
-F = "\033[1m"
+F = "\033[4m"
 R = "\033[0m"
 
 plt.rcParams["figure.figsize"] = [20, 5]
@@ -29,8 +29,8 @@ def greet_user() -> None:
 
 def help() -> None:
     print(f"{F}format [csv] [split]:{R} splits dataset for training and validation")
-    print(f"{F}train [config]:{R} trains model based on config specifications")
     print(f"{F}predict [model] [csv]:{R} evaluates existing model")
+    print(f"{F}train [config]:{R} trains model based on config specifications")
     print(f"{F}config:{R} prompts for different values to make a new config")
     print(f"{F}show:{R} lists all available models and config files")
     print(f"{F}exit:{R} terminates the program")
