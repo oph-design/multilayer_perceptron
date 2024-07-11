@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,21 +16,28 @@ class Network:
             self.epochs = conf["epochs"]
             self.rate = conf["learning_rate"]
             self.size = conf["batch_size"]
-            figure, axis = plt.subplots(1, 2)
-            self.accuracy = Visualizer(self.epochs, axis[0], "Accuracy")
-            self.loss = Visualizer(self.epochs, axis[1], "Loss")
+            self.index = [0, 0]
+            figure, axes = plt.subplots(1, 2)
+            self.accuracy = Visualizer(self.epochs, axes[0], "Accuracy")
+            self.loss = Visualizer(self.epochs, axes[1], "Loss")
             plt.ion()
 
     def __del__(self):
         plt.close("all")
 
+    def get_batch(self, data: pd.DataFrame, id: int) -> np.ndarray:
+        index = self.index[id]
+        limit = int(data.shape[0] / self.size) if data.shape[0] >= self.size else 1
+        self.index[id] = self.index[id] + 1 if self.index[id] + 1 != limit else 0
+        return data.loc[data["Batch"] == index].values
+
     def fit(self):
         """performs gradient descent for all layers in epoch time"""
         print(f"x_train shape: {self.data_t.shape[0]}, {self.data_t.shape[1] - 2}")
-        print(f"x_valid shape: {self.data_v.shape[0]}, {self.data_t.shape[1] - 2}")
+        print(f"x_valid shape: {self.data_v.shape[0]}, {self.data_v.shape[1] - 2}")
         for i in range(self.epochs):
-            batch = self.data_t.loc[self.data_t["Batch"] == i % self.size].values
-            validate = self.data_v.loc[self.data_v["Batch"] == i % self.size].values
+            batch = self.get_batch(self.data_t, 0)
+            validate = self.get_batch(self.data_v, 1)
             y_val = validate[:, 1:2].flatten()
             p_val = self.make_prediction(validate[:, 2:])
             target = batch[:, 1:2].flatten()
@@ -62,7 +70,7 @@ class Network:
             prev_activation = input
             for layer in self.layers:
                 layer.learn(self.rate, prev_activation, index)
-                prev_activation = layer.get_activation(index)
+                prev_activation = layer.activations[index]
         for layer in self.layers:
             layer.apply_changes(self.size)
 

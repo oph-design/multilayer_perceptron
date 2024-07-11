@@ -14,7 +14,6 @@ F = "\033[4m"
 R = "\033[0m"
 
 plt.rcParams["figure.figsize"] = [20, 5]
-plt.tight_layout()
 
 
 def greet_user() -> None:
@@ -81,6 +80,8 @@ def train(argc: int, argv: list) -> None:
     conf = read_conf(location)
     train = indexing("datasets/data_train.csv", conf["batch_size"])
     test = indexing("datasets/data_test.csv", conf["batch_size"])
+    if train.shape[0] < conf["batch_size"]:
+        conf["batch_size"] = train.shape[0]
     if train.shape[1] != 32 or test.shape[1] != 32:
         return print("invalid input: data must have 32 columns")
     dim = np.insert([30, 2], 1, conf["layer"])

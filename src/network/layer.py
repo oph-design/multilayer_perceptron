@@ -7,25 +7,23 @@ class Layer:
         """initializes  weights and biases"""
         self.biases = b
         self.weights = w
-        self.weighted_sums = np.zeros((size, len(b)))
+        self.activations = np.zeros((size, len(b)))
         self.errors = np.zeros((size, len(b)))
         self.bias_delta = np.zeros(b.shape)
         self.weight_delta = np.zeros(w.shape)
         self.activation = sigmoid if activation != 0 else soft_max
 
-    def get_activation(self, index):
-        return self.activation(self.weighted_sums[index])
-
     def get_neurons(self, prev_neurons: np.ndarray, index: int) -> np.ndarray:
         """returns the activation for all neurons"""
-        self.weighted_sums[index] = np.dot(self.weights, prev_neurons) + self.biases
-        return self.get_activation(index)
+        weighted_sum = np.dot(self.weights, prev_neurons) + self.biases
+        self.activations[index] = sigmoid(weighted_sum)
+        return self.activations[index]
 
     def calculate_error(
         self, post_weights: np.ndarray, post_error: np.ndarray, index: int
     ) -> np.ndarray:
         """calculate the error of each neuron of the layer"""
-        gradient = sigmoid_prime(self.weighted_sums[index])
+        gradient = self.activations[index] * (1.0 - self.activations[index])
         self.errors[index] = np.dot(post_weights.T, post_error) * gradient
         return self.errors[index]
 

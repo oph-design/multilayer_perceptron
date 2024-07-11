@@ -6,11 +6,6 @@ def sigmoid(x: np.ndarray) -> np.ndarray:
     return 1 / (1 + np.exp(x * -1))
 
 
-def sigmoid_prime(x: np.ndarray) -> np.ndarray:
-    """applys sigmoid derivative on array"""
-    return sigmoid(x) * (1 - sigmoid(x))
-
-
 def soft_max(x: np.ndarray) -> np.ndarray:
     """applys soft_max activation on array"""
     return np.exp(x - np.max(x)) / np.sum(np.exp(x))
