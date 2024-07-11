@@ -1,5 +1,5 @@
 import numpy as np
-from .mathematics import sigmoid, sigmoid_prime, soft_max
+from .mathematics import sigmoid, soft_max
 
 
 class Layer:
@@ -37,5 +37,5 @@ class Layer:
         """means the adjustments and applys them to the weights"""
         self.biases = self.biases - self.bias_delta / size
         self.weights = self.weights - self.weight_delta / size
-        self.bias_delta = np.zeros(self.biases.shape)
-        self.weight_delta = np.zeros(self.weights.shape)
+        self.bias_delta.fill(0.0)
+        self.weight_delta.fill(0.0)

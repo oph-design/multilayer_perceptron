@@ -19,12 +19,11 @@ def binary_cross_entropy(y: np.ndarray, p: np.ndarray) -> np.ndarray:
 
 def calc_error_gradient(y: np.ndarray, p: np.ndarray) -> np.ndarray:
     """calculates the error in the output layer"""
-    return np.column_stack((y - p[:, 0], (1 - y) - p[:, 1]))
+    return np.column_stack((p[:, 0] - y, p[:, 1] - (1 - y)))
 
 
 def accuracy(y: np.ndarray, p: np.ndarray) -> np.float_:
-    rounded = np.where(p >= 0.5, np.ceil(p), np.floor(p))
-    return np.mean(np.argmax(rounded, axis=1) == y)
+    return np.mean(np.argmax(p, axis=1) == y)
 
 
 def r_squared(y: np.ndarray, p: np.ndarray) -> np.float_:

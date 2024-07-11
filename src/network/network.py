@@ -42,6 +42,7 @@ class Network:
             p_val = self.make_prediction(validate[:, 2:])
             target = batch[:, 1:2].flatten()
             prediction = self.make_prediction(batch[:, 2:])
+            print(np.column_stack((prediction, target, 1 - target)))
             self.status(i, prediction, target, p_val, y_val)
             self.propagate_backwards(calc_error_gradient(target, prediction))
             self.adjust_parameters(batch[:, 2:])
@@ -104,8 +105,8 @@ class Network:
         result = np.column_stack((y, rounded.T[0])).astype(str)
         result[result == str(1.0)] = "M"
         result[result == str(0.0)] = "B"
-        accur = accuracy(y, p) * 100
         error = np.mean(binary_cross_entropy(y, p.T[0]))
+        accur = accuracy(y, p) * 100
         r_sq = r_squared(y, p.T[0])
         print(f"Prediction Error:       {error}")
         print(f"Prediction R Squared:   {r_sq}")

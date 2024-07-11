@@ -6,7 +6,7 @@ def train_factory(dim: np.ndarray, batch: int) -> list:
     return [
         Layer(
             np.random.uniform(-0.1, 0.1, size=(dim[x], dim[x - 1])),
-            np.random.uniform(-0.1, 0.1, size=(dim[x])),
+            np.zeros(dim[x]),
             batch,
             x % len(dim),
         )
